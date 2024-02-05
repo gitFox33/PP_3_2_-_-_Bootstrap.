@@ -1,0 +1,43 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en" xmlns:th="http://www.thymeleaf.org">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title>User creator</title>-->
+
+<!--</head>-->
+<!--<body>-->
+
+<!--<h2>Страница создания нового юзера</h2>-->
+<!--<br>-->
+<!--<br>-->
+<!--<form th:method="POST" th:action="@{/create}" th:object="${user}">-->
+<!--    <label for="name">Enter name: </label>-->
+<!--    <input type="text" th:field="*{name}" id="name" required/>-->
+<!--    <div style="color:red" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Name error</div>-->
+<!--    <br/>-->
+<!--    <br>-->
+<!--    <label for="email">Enter email: </label>-->
+<!--    <input type="email" th:field="*{email}" id="email" required/>-->
+<!--    <div style="color:red" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Email error</div>-->
+<!--    <br/>-->
+<!--    <br>-->
+<!--    <label for="age">Enter age: </label>-->
+<!--    <input type="text" th:field="*{age}" id="age" required/>-->
+<!--    <div style="color:red" th:if="${#fields.hasErrors('age')}" th:errors="*{age}">Age error</div>-->
+<!--    <br/>-->
+<!--    <br>-->
+
+<!--    <label for="username">Enter username: </label>-->
+<!--    <input type="text" th:field="*{username}" id="username" required/>-->
+<!--    <span class="error-txt" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Name Error</span>-->
+<!--    <br>-->
+<!--    <br>-->
+<!--    <label for="password">Enter password: </label>-->
+<!--    <input type="text" th:field="*{password}" id="password" required/>-->
+<!--    <span class="error-txt" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Name Error</span>-->
+<!--    <br>-->
+<!--    <br>-->
+<!--    <input type="submit" value="Create!">-->
+<!--</form>-->
+<!--</body>-->
+<!--</html>-->
