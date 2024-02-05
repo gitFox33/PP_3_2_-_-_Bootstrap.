@@ -71,7 +71,7 @@ public class AdminController {
                 model.addAttribute("adminRole", true);
             }
         }
-        return "edit";
+        return "redirect:/admin";
     }
 
     @PostMapping("/edit")
@@ -81,7 +81,7 @@ public class AdminController {
                          @RequestParam(name = "ROLE_USER", defaultValue = "false") boolean userRole,
                          @RequestParam(name = "ROLE_ADMIN", defaultValue = "false") boolean adminRole) {
         if (bindingResult.hasErrors()) {
-            return "edit";
+            return "redirect:/admin";
         }
 
         if (userRole) {

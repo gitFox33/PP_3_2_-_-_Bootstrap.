@@ -2,12 +2,52 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
 >
 <head>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css"
           integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
 
     <meta charset="UTF-8">
     <title>Admin panel</title>
     <style>
+
+        /* Стили для кнопки открытия модального окна */
+        .open-modal-btn {
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        /* Стили для модального окна */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+
+        .active-button.btn-outline-primary {
+            color: #fff;
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+
+        tbody, td, tfoot, th, thead, tr {
+            border-style: none;
+        }
+
+
         .button-style {
             display: inline-block;
             padding: 5px 10px;
@@ -28,11 +68,19 @@
         }
 
         th, td {
-            padding: 5px; /* Установка отступов внутри ячеек */
+            padding: 5px;
         }
+
+        .active-tab {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+
     </style>
 </head>
 <body>
+
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
         <div class="collapse navbar-collapse d-flex justify-content-between">
@@ -64,27 +112,28 @@
 
     <div class="col-3" style="text-align: left; height: 100vh; padding: 0;">
         <style>
-            .btn-outline-primary {
-                color: #007bff;
-                background-color: transparent;
+
+            .btn {
                 border: none;
             }
 
-            .btn-outline-primary:focus, .btn-outline-primary:active {
-                color: #007bff;
-                background-color: transparent;
-                box-shadow: none;
+
+            .btn-text {
+                display: flex;
+                justify-content: flex-start;
             }
+
         </style>
-        <button
-                id="adminBtn" onclick="showAllUsers()" type="button" class="btn btn-outline-primary btn-lg btn-block"
-                style="border-bottom-width: 0px;">Admin
+
+
+        <button id="adminBtn" onclick="showAllUsers()" type="button" class="btn btn-outline-primary btn-lg btn-block"
+                style="border-bottom-width: 0px;"><span class="btn-text">Admin</span>
         </button>
 
-        <button
-                id="userBtn" onclick="showOnlyUsers()" type="button" class="btn btn-outline-primary btn-lg btn-block"
-                data-bs-toggle="button" style="border-top-width: 0px;">User
+        <button id="userBtn" onclick="showOnlyUsers()" type="button" class="btn btn-outline-primary btn-lg btn-block"
+                data-bs-toggle="button" style="border-top-width: 0px;"><span class="btn-text">User</span>
         </button>
+
 
     </div>
 
@@ -92,66 +141,118 @@
         <h2>Admin panel</h2>
 
 
+
+
         <ul class="nav nav-tabs">
             <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="/admin">Users table</a>
+                <a class="nav-link active" aria-current="page" href="/admin" id="usersLink">Users table</a>
             </li>
 
             <li class="nav-item">
                 <a class="nav-link" href="#" id="createUserLink">New User</a>
-
-                <div id="createUserForm" style="display: none;">
-                    <h4>Add new user</h4>
-
-                    <form id="userForm" th:action="@{/create}" th:object="${users}" method="post" autocomplete="on">
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Name</label>
-                            <input type="text" class="form-control" id="name" name="name" autocomplete="on" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" autocomplete="on" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="age" class="form-label">Age</label>
-                            <input type="text" class="form-control" id="age" name="age" autocomplete="on" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="username" class="form-label">UserName</label>
-                            <input type="text" class="form-control" id="username" name="username" autocomplete="on" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="password" name="password" autocomplete="on" required>
-                        </div>
-                        <div class="mb-3">
-                            <input type="checkbox" id="userRole" name="selectedRoles" value="ROLE_USER"> User Role
-                            <input type="checkbox" id="adminRole" name="selectedRoles" value="ROLE_ADMIN"> Admin Role
-                        </div>
-                        <button type="submit" class="btn btn-primary">Add new user</button>
-                    </form>
-
-
-                </div>
             </li>
         </ul>
 
+        <div id="createUserForm" style="display: none;">
+            <h5>Add new user</h5>
+
+            <form id="userForm" th:action="@{/create}" th:object="${users}" method="post" autocomplete="on"
+                  style="background-color: white;">
+                <div class="mb-4 row">
+                    <div class="col-sm-3"></div>
+                    <div class="col-sm-6">
+                        <div class="text-center">
+                            <label for="name" style="display: block;">Name</label>
+                            <input type="text" class="form-control" id="name" name="name" autocomplete="on" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-4 row">
+                    <div class="col-sm-3"></div>
+                    <div class="col-sm-6">
+                        <div class="text-center">
+                            <label for="email" style="display: block;">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" autocomplete="on" required>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-4 row">
+                    <div class="col-sm-3"></div>
+                    <div class="col-sm-6">
+                        <div class="text-center">
+                            <label for="age" style="display: block">Age</label>
+                            <input type="text" class="form-control" id="age" name="age" autocomplete="on" required>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="mb-4 row">
+                    <div class="col-sm-3"></div>
+                    <div class="col-sm-6">
+                        <div class="text-center">
+                            <label for="username" style="display: block">username</label>
+                            <input type="text" class="form-control" id="username" name="username" autocomplete="off"
+                                   required>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="mb-4 row">
+                    <div class="col-sm-3"></div>
+                    <div class="col-sm-6">
+                        <div class="text-center">
+                            <label for="password" style="display: block">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" autocomplete="off"
+                                   required>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="mb-4 row">
+                    <div class="col-sm-3"></div>
+                    <div class="col-sm-6">
+                        <div class="form-floating mb-3">
+                            <div class="text-center"><label for="userRole">Role</label></div>
+                            <select class="form-select" id="userRole" name="selectedRoles"
+                                    aria-label="Floating label select example">
+
+                                <option value="ROLE_USER">USER</option>
+                                <option value="ROLE_ADMIN">ADMIN</option>
+                            </select>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-4 row">
+                    <div class="col-sm-2"></div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary">Add new user</button>
+                    </div>
+                </div>
+            </form>
+
+
+        </div>
+
 
         <div id="usersList">
+
             <table class="table table-bordered" style="border-top-left-radius: 10px; border-top-right-radius: 10px;">
                 <tbody>
                 <tr>
-                    <td>All users</td>
+                    <td><h5>All users</h5></td>
                 </tr>
                 <tr style="background-color: white;">
                     <td>
-                        <table class="table">
+
+                        <table class="table table-striped">
                             <thead>
-                            <tr>
-                                <td colspan="8" style="background-color: #ffffff;"></td>
-                            </tr>
-                            </thead>
-                            <tbody>
                             <tr>
                                 <th scope="col">Name</th>
                                 <th scope="col">Email</th>
@@ -162,10 +263,9 @@
                                 <th scope="col">Edit</th>
                                 <th scope="col">Delete</th>
                             </tr>
-                            <tr style="background-color: lightgray;">
-
+                            </thead>
+                            <tbody>
                             <tr th:each="user : ${users}" class="user-row">
-
                                 <td th:text="${user.getName()}">value</td>
                                 <td th:text="${user.getEmail()}">value</td>
                                 <td th:text="${user.getAge()}">value</td>
@@ -175,7 +275,27 @@
                                     <span th:text="${role.getName()}"></span>
                                     <br th:if="${!roleStat.last}"/>
                                 </td>
-                                <td><a th:href="@{/edit(id=${user.id})}" class="button-style">Edit</a></td>
+
+
+
+                                <td>
+
+                                    <button class="open-modal-btn" onclick="openModal()">Открыть модальное окно</button>
+
+
+                                </td>
+
+
+<!--                                <td> -->
+<!--                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editUserModal">-->
+<!--                                    Edit-->
+<!--                                </button>-->
+<!--                                </td>-->
+
+
+
+
+<!--                                <td><a th:href="@{/edit(id=${user.id})}" class="button-style">Edit</a></td>-->
                                 <td><a th:href="@{/delete(id=${user.id})}" class="button-style1">Delete</a></td>
                             </tr>
                             </tbody>
@@ -185,20 +305,159 @@
                 </tbody>
             </table>
         </div>
-
-
         </tbody>
         </table>
     </div>
-
 </div>
 
+<!-- Модальное окно -->
+<div id="myModal" class="modal" onclick="closeModal(event)">
+    <div class="modal-content">
+        <span style="float: right; cursor: pointer;" onclick="closeModal(event)">&times;</span>
+        <h2>Форма изменения пользователя</h2>
+
+
+        <form id="22" th:action="@{/create}" th:object="${user}" method="post" autocomplete="on"
+              style="background-color: white;">
+            <div class="mb-4 row">
+                <div class="col-sm-3"></div>
+                <div class="col-sm-6">
+                    <div class="text-center">
+                        <label for="name" style="display: block;">Name</label>
+                        <input type="text" class="form-control" id="name" name="name" autocomplete="on" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-4 row">
+                <div class="col-sm-3"></div>
+                <div class="col-sm-6">
+                    <div class="text-center">
+                        <label for="email" style="display: block;">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" autocomplete="on" required>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-4 row">
+                <div class="col-sm-3"></div>
+                <div class="col-sm-6">
+                    <div class="text-center">
+                        <label for="age" style="display: block">Age</label>
+                        <input type="text" class="form-control" id="age" name="age" autocomplete="on" required>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="mb-4 row">
+                <div class="col-sm-3"></div>
+                <div class="col-sm-6">
+                    <div class="text-center">
+                        <label for="username" style="display: block">username</label>
+                        <input type="text" class="form-control" id="username" name="username" autocomplete="off"
+                               required>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="mb-4 row">
+                <div class="col-sm-3"></div>
+                <div class="col-sm-6">
+                    <div class="text-center">
+                        <label for="password" style="display: block">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" autocomplete="off"
+                               required>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="mb-4 row">
+                <div class="col-sm-3"></div>
+                <div class="col-sm-6">
+                    <div class="form-floating mb-3">
+                        <div class="text-center"><label for="userRole">Role</label></div>
+                        <select class="form-select" id="userRole" name="selectedRoles"
+                                aria-label="Floating label select example">
+
+                            <option value="ROLE_USER">USER</option>
+                            <option value="ROLE_ADMIN">ADMIN</option>
+                        </select>
+
+                    </div>
+                </div>
+            </div>
+            <div class="mb-4 row">
+                <div class="col-sm-2"></div>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary">Add new user</button>
+                </div>
+            </div>
+
+
+
+            <!--        <form method="POST" action="/edit" id="editForm">-->
+<!--            <label for="name">Name: </label>-->
+<!--            <input type="text" name="name" id="name.edit" required/>-->
+<!--            <br>-->
+<!--            <br>-->
+<!--            <label for="email">Email: </label>-->
+<!--            <input type="email" name="email" id="email" required/>-->
+<!--            <br>-->
+<!--            <br>-->
+<!--            <label for="age">Age: </label>-->
+<!--            <input type="number" name="age" id="age" required/>-->
+<!--            <br>-->
+<!--            <br>-->
+<!--            <label for="username">Username: </label>-->
+<!--            <input type="text" name="username" id="username" required/>-->
+<!--            <br>-->
+<!--            <br>-->
+<!--            <label for="password">Password: </label>-->
+<!--            <input type="text" name="password" id="password" required/>-->
+<!--            <br>-->
+<!--            <br>-->
+<!--            <label for="role1">Set user role</label>-->
+<!--            <input type="checkbox" name="ROLE_USER" id="role1" />-->
+<!--            <br>-->
+<!--            <label for="role2">Set admin role</label>-->
+<!--            <input type="checkbox" name="ROLE_ADMIN" id="role2" />-->
+<!--            <br>-->
+<!--            <br>-->
+<!--            <input type="submit" value="Update!">-->
+        </form>
+    </div>
+</div>
+
+
 <script>
+
+    document.getElementById('usersLink').addEventListener('click', function(event) {
+        event.preventDefault();
+        document.getElementById('createUserLink').classList.remove('active');
+        document.getElementById('usersLink').classList.add('active');
+        document.getElementById('createUserForm').style.display = 'none';
+        document.getElementById('usersList').style.display = 'block';
+    });
+
+    document.getElementById('createUserLink').addEventListener('click', function(event) {
+        event.preventDefault();
+        document.getElementById('usersLink').classList.remove('active');
+        document.getElementById('createUserLink').classList.add('active');
+        document.getElementById('usersTable').style.display = 'none';
+        document.getElementById('createUserForm').style.display = 'block';
+    });
+
     function showAllUsers() {
         var userRows = document.querySelectorAll('.user-row');
         userRows.forEach(function (row) {
-            row.style.display = 'table-row'; // показываем все строки
+            row.style.display = 'table-row';
         });
+        document.getElementById('adminBtn').classList.add('active-button');
+        document.getElementById('userBtn').classList.remove('active-button');
     }
 
     function showOnlyUsers() {
@@ -206,17 +465,33 @@
         userRows.forEach(function (row) {
             var roleCell = row.querySelector('span');
             if (roleCell && roleCell.textContent.trim() !== 'ROLE_USER') {
-                row.style.display = 'none'; // скрываем строки с ролью отличной от 'ROLE_USER'
+                row.style.display = 'none';
             } else {
-                row.style.display = 'table-row'; // показываем строки с ролью 'ROLE_USER'
+                row.style.display = 'table-row';
             }
         });
+        document.getElementById('userBtn').classList.add('active-button');
+        document.getElementById('adminBtn').classList.remove('active-button');
     }
 
-    document.addEventListener("DOMContentLoaded", function (event) {
-        document.getElementById('adminBtn').addEventListener('click', showAllUsers);
-        document.getElementById('userBtn').addEventListener('click', showOnlyUsers);
-    });
+    // JavaScript для открытия и закрытия модального окна
+    function openModal() {
+        var modal = document.getElementById('myModal');
+        modal.style.display = "block";
+    }
+
+    function closeModal(event) {
+        var modal = document.getElementById('myModal');
+        if (event.target === modal) {
+            modal.style.display = "none";
+        }
+    }
+
+
+    // Добавляем класс active-button к кнопке "Admin" при загрузке страницы
+    window.onload = function () {
+        document.getElementById('adminBtn').classList.add('active-button');
+    };
 
 
     // Обработчик события для показа формы создания нового пользователя
@@ -229,6 +504,9 @@
     });
 
 </script>
+
+
+
 
 </body>
 </html>
