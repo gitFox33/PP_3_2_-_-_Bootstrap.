@@ -1,5 +1,8 @@
 package ru.kata.spring.boot_security.demo.controller;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -12,7 +15,7 @@ import ru.kata.spring.boot_security.demo.models.User;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
 import javax.validation.Valid;
-import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -26,13 +29,19 @@ public class AdminController {
 
 
     @GetMapping("/admin")
-    public String adminPage(Model model, Model model2, Principal principal) {
+    public String adminPage(Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails ud = (UserDetails) authentication.getPrincipal();
 
-        String name = principal.getName();
-        String email = userService.getUserEmail(name);
-        User user = userService.getUserByUsername(name);
-        Role role = userService.getRoleByName("ROLE_ADMIN");
-        model2.addAttribute("currentUser", user);
+        List<Role> allRoles = new ArrayList<>();
+        allRoles.add(new Role("ROLE_ADMIN"));
+        allRoles.add(new Role("ROLE_USER"));
+
+
+
+        model.addAttribute("userModel", new User());
+        model.addAttribute("allRoles", allRoles);
+        model.addAttribute("currentUser", userService.getUserByUsername(ud.getUsername()));
         model.addAttribute("users", userService.getAllUsers());
         return "admin";
     }
@@ -60,41 +69,26 @@ public class AdminController {
         return "redirect:/admin";
     }
 
-    @GetMapping("/edit")
-    public String editPage(@RequestParam(value = "id") long id, Model model) {
-        model.addAttribute("user", userService.getUserById(id));
-        for (Role role : userService.getUserById(id).getRoles()) {
-            if ("ROLE_USER".equals(role.getName())) {
-                model.addAttribute("userRole", true);
-            }
-            if ("ROLE_ADMIN".equals(role.getName())) {
-                model.addAttribute("adminRole", true);
-            }
-        }
-        return "redirect:/admin";
-    }
 
     @PostMapping("/edit")
-    public String update(@ModelAttribute("user") @Valid User user,
-                         BindingResult bindingResult,
-                         @RequestParam(value = "id") long id,
-                         @RequestParam(name = "ROLE_USER", defaultValue = "false") boolean userRole,
-                         @RequestParam(name = "ROLE_ADMIN", defaultValue = "false") boolean adminRole) {
-        if (bindingResult.hasErrors()) {
-            return "redirect:/admin";
-        }
+    public String edit(@RequestParam("id") long id,
+                       @RequestParam("edit_name") @Valid String name,
+                       @RequestParam("edit_email") String lastName,
+                       @RequestParam("edit_age") Integer age,
+                       @RequestParam("edit_username") String username,
+                       @RequestParam("edit_password") String password,
+                       @RequestParam("selectedRoles") List<String> selectedRoles) {
+        User user = new User(name, lastName, age, username, password);
 
-        if (userRole) {
-            user.addRole(userService.getRoleByName("ROLE_USER"));
-        }
-        if (adminRole) {
-            user.addRole(userService.getRoleByName("ROLE_ADMIN"));
+        for (String roleName : selectedRoles) {
+            user.addRole(userService.getRoleByName(roleName));
         }
         userService.editUser(id, user);
         return "redirect:/admin";
     }
 
-    @GetMapping("/delete")
+
+    @PostMapping("/delete")
     public String deleteUser(@RequestParam(value = "id") long id) {
         userService.deleteUser(id);
         return "redirect:/admin";

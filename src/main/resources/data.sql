@@ -1,12 +1,16 @@
-INSERT INTO roles (name) VALUES ('ROLE_USER');
-INSERT INTO roles (name) VALUES ('ROLE_ADMIN');
+INSERT INTO roles (name)
+VALUES ('ROLE_USER');
+INSERT INTO roles (name)
+VALUES ('ROLE_ADMIN');
 
-INSERT INTO users (name, email, age, password, username) VALUES ('Alex', 'Alex@gmail', 24, 'user', 'user');
-INSERT INTO users (name, email, age, password, username) VALUES ('Boris', 'Boris@gmail', 45, 'admin', 'admin');
-INSERT INTO users (name, email, age, password, username) VALUES ('Ilnur', 'Ilnur@gmail', 100, 'a', 'a');
-INSERT INTO users (name, email, age, password, username) VALUES ('Roza', 'Roza@gmail', 55, 'e', 'e');
+INSERT INTO users (name, email, age, password, username)
+VALUES ('Alex', 'Alex@gmail', 24, 'user', 'user');
+INSERT INTO users (name, email, age, password, username)
+VALUES ('Boris', 'Boris@gmail', 45, 'admin', 'admin');
 
-INSERT INTO users_roles (users_id, roles_id) VALUES (1, 1);
-INSERT INTO users_roles (users_id, roles_id) VALUES (2, 2);
-INSERT INTO users_roles (users_id, roles_id) VALUES (3, 1);
-INSERT INTO users_roles (users_id, roles_id) VALUES (4, 1);
+
+INSERT INTO users_roles (users_id, roles_id)
+VALUES (1, 1);
+INSERT INTO users_roles (users_id, roles_id)
+VALUES (2, 2);
+
