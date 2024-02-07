@@ -20,6 +20,7 @@ import java.util.List;
 
 @Controller
 public class AdminController {
+    private final String ADMIN_PAGE = "redirect:/admin";
     private final UserService userService;
 
 
@@ -53,20 +54,20 @@ public class AdminController {
                          @RequestParam("selectedRoles") List<String> selectedRoles) {
         if (bindingResult.hasErrors()) {
             System.out.println("Incorrect create input");
-            return "redirect:/admin";
+            return ADMIN_PAGE;
         }
 
         for (String roleName : selectedRoles) {
             user.addRole(userService.getRoleByName(roleName));
         }
         userService.createUser(user);
-        return "redirect:/admin";
+        return ADMIN_PAGE;
     }
 
     @GetMapping("/create")
     public String newPage(Model model) {
         model.addAttribute("user", new User());
-        return "redirect:/admin";
+        return ADMIN_PAGE;
     }
 
 
@@ -84,13 +85,13 @@ public class AdminController {
             user.addRole(userService.getRoleByName(roleName));
         }
         userService.editUser(id, user);
-        return "redirect:/admin";
+        return ADMIN_PAGE;
     }
 
 
     @PostMapping("/delete")
     public String deleteUser(@RequestParam(value = "id") long id) {
         userService.deleteUser(id);
-        return "redirect:/admin";
+        return ADMIN_PAGE;
     }
 }
